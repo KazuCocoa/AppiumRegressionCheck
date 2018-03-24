@@ -67,6 +67,7 @@ let simpleCheck = async (caps, serverPort, finalizer = null) => {
     // check page source method works without error
     console.log("page source");
     let xmlStr = await driver.source();
+    console.log(xmlStr);
     let parsed = await xml2js(xmlStr);
     assert.isTrue(!!parsed); // not null
 
@@ -122,7 +123,7 @@ describe("Appium", function() {
 
   before(async () => {
     java8AppiumServer = await launchAppiumServer("1.8", java8Port);
-    java9AppiumServer = await launchAppiumServer("9", java9Port);
+    // java9AppiumServer = await launchAppiumServer("9", java9Port);
     await sleep(8000); // TODO smarter wait
   });
 
@@ -173,10 +174,10 @@ describe("Appium", function() {
     // - iOS real device must be connected
     // - APPLE_TEAM_ID_FOR_MAGIC_POD environment variable must be set
     forEach([
-      ['app', testAppDir + "/AppiumRegressionTestApp.ipa"],
-      ['app', testAppDir + "/TestApp.ipa"],
-      ['bundleId', 'com.apple.camera'],
-      ['bundleId', 'com.apple.Health']
+      ['bundleId', 'com.trident-qa.AppiumRegressionTestApp'],
+      // ['app', testAppDir + "/TestApp.ipa"],
+      // ['bundleId', 'com.apple.camera'],
+      // ['bundleId', 'com.apple.Health']
     ])
     .it("should work with iOS real device: %s=%s", async (targetKey, targetValue) => {
       let caps = {
@@ -187,13 +188,13 @@ describe("Appium", function() {
         automationName: 'XCUITest',
         showXcodeLog: true,
         xcodeSigningId: 'iPhone Developer',
-        xcodeOrgId: process.env.APPLE_TEAM_ID_FOR_MAGIC_POD,
+        xcodeOrgId: process.env.XCODE_ORG_ID,
         wdaLocalPort: iosRealDeviceWdaPort
       };
       caps[targetKey] = targetValue;
-      if (targetValue.endsWith("AppiumRegressionTestApp.ipa")) {
+      if (targetValue.endsWith("AppiumRegressionTestApp")) {
         // to show the camera permission dialog which is displayed only for the initial launch
-        caps["fullReset"] = true;
+        caps["fullReset"] = false;
         // close the system dialog at the end of the test
         var finalizer = async (driver) => { await driver.acceptAlert(); }
       } else {
