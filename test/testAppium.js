@@ -103,7 +103,10 @@ let simpleCheck = async (caps, serverPort, beforeHook = null, afterHook = null) 
       await beforeHook(driver);
     }
     console.log("screenshot");
-    await checkTakeScreenshotWorks(driver);
+
+    for (var i = 0; i < 100; i++) {
+      await checkTakeScreenshotWorks(driver);
+    }
     console.log("page source");
     await checkSourceCommandWorks(driver);
 
